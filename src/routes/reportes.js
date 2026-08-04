@@ -82,7 +82,7 @@ router.get('/auditoria/:id/pdf', authenticateToken, async (req, res) => {
     res.send(pdfBuffer);
   } catch (error) {
     console.error('Error al generar PDF de reporte ejecutivo:', error);
-    res.status(500).json({ error: 'Error al generar el reporte ejecutivo PDF' });
+    res.status(500).json({ error: error.message || 'Error al generar el reporte ejecutivo PDF' });
   }
 });
 

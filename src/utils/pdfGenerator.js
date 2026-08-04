@@ -19,9 +19,9 @@ export async function generateExecutiveReportPDF(data) {
       <meta charset="UTF-8">
       <title>Reporte Ejecutivo - ${audit.nombre_organizacion}</title>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
-          font-family: 'Inter', sans-serif;
+          /* Evita dependencia de red para fuentes durante render en Puppeteer */
+          font-family: Arial, Helvetica, sans-serif;
           color: #1E293B;
           margin: 0;
           padding: 0;
@@ -257,19 +257,31 @@ export async function generateExecutiveReportPDF(data) {
     </html>
   `;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
-  const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-  const pdfBuffer = await page.pdf({
-    format: 'A4',
-    margin: { top: '15mm', right: '15mm', bottom: '15mm', left: '15mm' },
-    printBackground: true,
-  });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      margin: { top: '15mm', right: '15mm', bottom: '15mm', left: '15mm' },
+      printBackground: true,
+    });
 
-  await browser.close();
-  return pdfBuffer;
+    return pdfBuffer;
+  } catch (error) {
+    const rawMessage = error?.message || 'Error desconocido al renderizar PDF';
+    if (rawMessage.includes('Could not find Chrome')) {
+      throw new Error('Puppeteer no encontro el navegador Chrome/Chromium. Reinstala dependencias del backend para descargar el binario.');
+    }
+    throw new Error(`Fallo al generar PDF con Puppeteer: ${rawMessage}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
 }
