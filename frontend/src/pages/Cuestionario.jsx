@@ -39,6 +39,7 @@ export default function Cuestionario() {
           mapped[r.id_pregunta] = {
             id_tipo_respuesta: r.id_tipo_respuesta,
             observaciones: r.observaciones || '',
+            nivel_madurez_manual: r.nivel_madurez_manual ?? null,
           };
         });
         setRespuestas(mapped);
@@ -71,6 +72,16 @@ export default function Cuestionario() {
     }));
   };
 
+  const handleMadurezChange = (id_pregunta, nivel) => {
+    setRespuestas((prev) => ({
+      ...prev,
+      [id_pregunta]: {
+        ...prev[id_pregunta],
+        nivel_madurez_manual: prev[id_pregunta]?.nivel_madurez_manual === nivel ? null : nivel,
+      },
+    }));
+  };
+
   const handleSave = async (redirect = false) => {
     setSaving(true);
     setMessage('');
@@ -80,6 +91,7 @@ export default function Cuestionario() {
       id_pregunta: parseInt(id_pregunta_str, 10),
       id_tipo_respuesta: val.id_tipo_respuesta,
       observaciones: val.observaciones,
+      nivel_madurez_manual: val.nivel_madurez_manual !== undefined ? val.nivel_madurez_manual : null,
     }));
 
     try {
@@ -279,7 +291,62 @@ export default function Cuestionario() {
                         </div>
 
                         {/* Observation Input */}
-                        <div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                          {/* Maturity Level Selector */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', whiteSpace: 'nowrap' }}>
+                              Nivel de madurez:
+                            </span>
+                            {[
+                              { nivel: 0, label: '0 - Inexistente', color: '#6B7280', bg: '#F3F4F6' },
+                              { nivel: 1, label: '1 - Inicial',     color: '#DC2626', bg: '#FEF2F2' },
+                              { nivel: 2, label: '2 - Repetible',   color: '#EA580C', bg: '#FFF7ED' },
+                              { nivel: 3, label: '3 - Definido',    color: '#D97706', bg: '#FFFBEB' },
+                              { nivel: 4, label: '4 - Gestionado',  color: '#16A34A', bg: '#F0FDF4' },
+                              { nivel: 5, label: '5 - Optimizado',  color: '#2563EB', bg: '#EFF6FF' },
+                            ].map(({ nivel, label, color, bg }) => {
+                              const isSelected = currentResp.nivel_madurez_manual === nivel;
+                              return (
+                                <button
+                                  key={nivel}
+                                  type="button"
+                                  title={label}
+                                  onClick={() => handleMadurezChange(p.id_pregunta, nivel)}
+                                  style={{
+                                    width: '2rem',
+                                    height: '2rem',
+                                    borderRadius: '6px',
+                                    border: `2px solid ${isSelected ? color : '#CBD5E1'}`,
+                                    background: isSelected ? bg : 'white',
+                                    color: isSelected ? color : '#94A3B8',
+                                    fontWeight: 800,
+                                    fontSize: '0.8125rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    boxShadow: isSelected ? `0 0 0 2px ${color}33` : 'none',
+                                  }}
+                                >
+                                  {nivel}
+                                </button>
+                              );
+                            })}
+                            {currentResp.nivel_madurez_manual !== null && currentResp.nivel_madurez_manual !== undefined && (
+                              <span style={{
+                                fontSize: '0.75rem',
+                                color: '#475569',
+                                background: '#F1F5F9',
+                                padding: '0.125rem 0.5rem',
+                                borderRadius: '999px',
+                                fontWeight: 600,
+                              }}>
+                                {[
+                                  'Inexistente','Inicial','Repetible','Definido','Gestionado','Optimizado'
+                                ][currentResp.nivel_madurez_manual]}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Observation text input */}
                           <input
                             type="text"
                             className="form-input"

@@ -153,12 +153,13 @@ CREATE TABLE auditoria (
 -- ------------------------------------------------------------
 
 CREATE TABLE respuesta_auditoria (
-    id_respuesta       SERIAL PRIMARY KEY,
-    id_auditoria       INT NOT NULL REFERENCES auditoria(id_auditoria) ON DELETE CASCADE,
-    id_pregunta        INT NOT NULL REFERENCES pregunta(id_pregunta),
-    id_tipo_respuesta  INT NOT NULL REFERENCES tipo_respuesta(id_tipo_respuesta),
-    observaciones      TEXT,
-    fecha_registro     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_respuesta           SERIAL PRIMARY KEY,
+    id_auditoria           INT NOT NULL REFERENCES auditoria(id_auditoria) ON DELETE CASCADE,
+    id_pregunta            INT NOT NULL REFERENCES pregunta(id_pregunta),
+    id_tipo_respuesta      INT NOT NULL REFERENCES tipo_respuesta(id_tipo_respuesta),
+    observaciones          TEXT,
+    nivel_madurez_manual   SMALLINT CHECK (nivel_madurez_manual BETWEEN 0 AND 5),
+    fecha_registro         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (id_auditoria, id_pregunta)
 );
 

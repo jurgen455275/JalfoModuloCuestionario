@@ -23,7 +23,9 @@ export async function withTransaction(userId, callback) {
     await client.query('BEGIN');
     if (userId) {
       // Set local app session variable for triggers
-      await client.query('SET LOCAL app.current_user_id = $1', [userId]);
+      // SET LOCAL no acepta parámetros ($1) en PostgreSQL — interpolamos el valor directamente.
+      // Se convierte a entero para evitar inyección SQL.
+      await client.query(`SET LOCAL app.current_user_id = ${parseInt(userId, 10)}`);
     }
     const result = await callback(client);
     await client.query('COMMIT');

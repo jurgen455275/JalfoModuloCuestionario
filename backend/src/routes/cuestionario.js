@@ -129,13 +129,15 @@ router.post('/auditoria/:id/respuestas', authenticateToken, requireRole('Adminis
         if (!item.id_pregunta || !item.id_tipo_respuesta) continue;
 
         await client.query(
-          `INSERT INTO respuesta_auditoria (id_auditoria, id_pregunta, id_tipo_respuesta, observaciones)
-           VALUES ($1, $2, $3, $4)
+          `INSERT INTO respuesta_auditoria (id_auditoria, id_pregunta, id_tipo_respuesta, observaciones, nivel_madurez_manual)
+           VALUES ($1, $2, $3, $4, $5)
            ON CONFLICT (id_auditoria, id_pregunta)
            DO UPDATE SET id_tipo_respuesta = EXCLUDED.id_tipo_respuesta,
                          observaciones = EXCLUDED.observaciones,
+                         nivel_madurez_manual = EXCLUDED.nivel_madurez_manual,
                          fecha_registro = CURRENT_TIMESTAMP`,
-          [id_auditoria, item.id_pregunta, item.id_tipo_respuesta, item.observaciones || null]
+          [id_auditoria, item.id_pregunta, item.id_tipo_respuesta, item.observaciones || null,
+           item.nivel_madurez_manual !== undefined && item.nivel_madurez_manual !== null ? parseInt(item.nivel_madurez_manual, 10) : null]
         );
       }
 
