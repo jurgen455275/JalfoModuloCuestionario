@@ -4,10 +4,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5174,
+    host: '0.0.0.0',
+    allowedHosts: ['jalfomodulocuestionario-1.onrender.com'],
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://jalfomodulocuestionario.onrender.com/',
         changeOrigin: true,
       },
     },
