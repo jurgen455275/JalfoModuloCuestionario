@@ -17,7 +17,7 @@ export default function Navbar() {
     <header className="glass-nav" style={{ padding: '0.875rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <a
-          href="http://localhost:5173"
+          href="https://jalfolandingpage-1.onrender.com"
           target="_blank"
           rel="noopener noreferrer"
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', color: '#38BDF8', textDecoration: 'none', background: 'rgba(56, 189, 248, 0.1)', padding: '0.375rem 0.75rem', borderRadius: '6px', border: '1px solid rgba(56, 189, 248, 0.2)' }}
